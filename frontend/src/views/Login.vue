@@ -60,18 +60,23 @@
           <p class="text-slate-500 text-sm font-medium">SGCI-DREH | Sistema de Gestión y Control Institucional</p>
         </div>
 
-        <!-- Error Alert -->
-        <div v-if="loginError"
-          class="mb-6 bg-red-50 border-2 border-red-200 rounded-xl p-4 animate-shake transition-all duration-300 ease-in-out">
-          <div class="flex items-start gap-3">
-            <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd" />
-              </svg>
+        <!-- Error Alert - altura fija para evitar que el contenido se mueva -->
+        <div class="mb-6 min-h-[60px]">
+          <div 
+            :class="[
+              'bg-red-50 border-2 border-red-200 rounded-xl p-4 transition-all duration-300 ease-in-out',
+              loginError ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+            ]">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-red-800">{{ loginError || '&nbsp;' }}</p>
             </div>
-            <p class="text-sm font-semibold text-red-800">{{ loginError }}</p>
           </div>
         </div>
 
