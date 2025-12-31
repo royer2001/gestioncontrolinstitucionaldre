@@ -5,6 +5,10 @@ __pycache__/
 venv/
 .venv/
 env/
+.env
+
+# Google Credentials (SENSITIVE)
+credentials.json
 
 # Logs
 *.log
@@ -25,3 +29,4 @@ Thumbs.db
 
 # Generated PDFs (optional, remove if you want to track some)
 *.pdf
+env.render
