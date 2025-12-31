@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dre-sistema-control
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0 # Or the version you are using
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_SHEET_ID
+        sync: false
+      - key: GOOGLE_SHEETS_CREDENTIALS_JSON
+        sync: false # This should contain the full JSON of your credentials
+      - key: NODE_VERSION
+        value: 20.x
