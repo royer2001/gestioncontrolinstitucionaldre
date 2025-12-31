@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '', // Relative path in production if served from same origin
+  baseURL: import.meta.env.VITE_API_URL || '/api', // All API calls go to /api/*
   headers: {
     'Content-Type': 'application/json',
   },

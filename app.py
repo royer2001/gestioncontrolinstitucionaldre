@@ -35,25 +35,27 @@ from routes.entry_exit_routes import entry_exit_bp
 from routes.visitor_routes import visitor_bp
 from routes.report_routes import report_bp
 
-app.register_blueprint(auth_bp, url_prefix='/auth')
-app.register_blueprint(occurrence_bp, url_prefix='/occurrence')
-app.register_blueprint(entry_exit_bp, url_prefix='/entry_exit')
-app.register_blueprint(visitor_bp, url_prefix='/visitor')
-app.register_blueprint(report_bp, url_prefix='/report')
+# Todas las rutas de API ahora tienen prefijo /api/
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(occurrence_bp, url_prefix='/api/occurrence')
+app.register_blueprint(entry_exit_bp, url_prefix='/api/entry_exit')
+app.register_blueprint(visitor_bp, url_prefix='/api/visitor')
+app.register_blueprint(report_bp, url_prefix='/api/report')
+
 from routes.vehicle_routes import vehicle_bp
-app.register_blueprint(vehicle_bp, url_prefix='/vehicle')
+app.register_blueprint(vehicle_bp, url_prefix='/api/vehicle')
 
 from routes.cita_routes import cita_bp
-app.register_blueprint(cita_bp, url_prefix='/citas')
+app.register_blueprint(cita_bp, url_prefix='/api/citas')
 
 from routes.license_routes import license_bp
-app.register_blueprint(license_bp, url_prefix='/license')
+app.register_blueprint(license_bp, url_prefix='/api/license')
 
 from routes.hr_routes import hr_bp
-app.register_blueprint(hr_bp, url_prefix='/hr')
+app.register_blueprint(hr_bp, url_prefix='/api/hr')
 
 from routes.turn_routes import turn_bp
-app.register_blueprint(turn_bp, url_prefix='/turn')
+app.register_blueprint(turn_bp, url_prefix='/api/turn')
 
 # Serve Vue Static Files
 @app.route('/', defaults={'path': ''})
