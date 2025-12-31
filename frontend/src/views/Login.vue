@@ -236,6 +236,10 @@ const handleLogin = handleSubmit(async (values) => {
     }
   } catch (err) {
     loginError.value = err.response?.data?.message || 'Error al iniciar sesión';
+    // Ocultar el mensaje de error después de 5 segundos
+    setTimeout(() => {
+      loginError.value = '';
+    }, 5000);
   } finally {
     isLoading.value = false;
   }
