@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for, send_from_directory
+from flask import Flask, render_template, session, redirect, url_for, send_from_directory, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -7,11 +7,25 @@ import os
 load_dotenv()
 
 # Configuración para servir el frontend desde Flask
-# Usar __file__ para obtener la ruta del directorio del script, más confiable que getcwd()
 basedir = os.path.abspath(os.path.dirname(__file__))
 frontend_folder = os.path.join(basedir, 'frontend', 'dist')
 
-app = Flask(__name__, static_folder=frontend_folder, static_url_path='/')
+# Logging al iniciar
+print(f"🚀 Base directory: {basedir}")
+print(f"📁 Frontend folder: {frontend_folder}")
+print(f"📁 Frontend folder exists: {os.path.exists(frontend_folder)}")
+
+if os.path.exists(frontend_folder):
+    print(f"📄 Contents of dist: {os.listdir(frontend_folder)}")
+else:
+    print("⚠️ WARNING: frontend/dist folder does NOT exist!")
+    # Listar lo que hay en basedir para depurar
+    print(f"📂 Contents of basedir: {os.listdir(basedir)}")
+    frontend_check = os.path.join(basedir, 'frontend')
+    if os.path.exists(frontend_check):
+        print(f"📂 Contents of frontend: {os.listdir(frontend_check)}")
+
+app = Flask(__name__, static_folder=frontend_folder, static_url_path='')
 CORS(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '6d4ffae0888e1d0f492aba5dbc8d6312455dca98b00f34a9cf1b2f9b7dccdc8e')
 
@@ -41,14 +55,32 @@ app.register_blueprint(hr_bp, url_prefix='/hr')
 from routes.turn_routes import turn_bp
 app.register_blueprint(turn_bp, url_prefix='/turn')
 
-# Serve React/Vue Static Files
+# Serve Vue Static Files
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists(app.static_folder + '/' + path):
+    # Si la carpeta dist no existe, mostrar error informativo
+    if not os.path.exists(app.static_folder):
+        return jsonify({
+            'error': 'Frontend not built',
+            'message': 'La carpeta frontend/dist no existe. Verifica que el build se haya ejecutado correctamente.',
+            'static_folder': app.static_folder,
+            'basedir': basedir
+        }), 500
+    
+    # Servir archivos estáticos
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
     else:
-        return send_from_directory(app.static_folder, 'index.html')
+        index_path = os.path.join(app.static_folder, 'index.html')
+        if os.path.exists(index_path):
+            return send_from_directory(app.static_folder, 'index.html')
+        else:
+            return jsonify({
+                'error': 'index.html not found',
+                'message': 'No se encontró index.html en la carpeta dist.',
+                'contents': os.listdir(app.static_folder) if os.path.exists(app.static_folder) else []
+            }), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
