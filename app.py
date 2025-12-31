@@ -7,7 +7,9 @@ import os
 load_dotenv()
 
 # Configuración para servir el frontend desde Flask
-frontend_folder = os.path.join(os.getcwd(), 'frontend/dist')
+# Usar __file__ para obtener la ruta del directorio del script, más confiable que getcwd()
+basedir = os.path.abspath(os.path.dirname(__file__))
+frontend_folder = os.path.join(basedir, 'frontend', 'dist')
 
 app = Flask(__name__, static_folder=frontend_folder, static_url_path='/')
 CORS(app)
