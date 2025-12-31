@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for, send_from_directory, jsonify
+from flask import Flask, render_template, session, redirect, url_for, send_from_directory, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -61,6 +61,10 @@ app.register_blueprint(turn_bp, url_prefix='/api/turn')
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
+    # Si es una ruta de API que no existe, dejar que Flask maneje el 404
+    if path.startswith('api/'):
+        return jsonify({'error': 'API endpoint not found'}), 404
+    
     # Si la carpeta dist no existe, mostrar error informativo
     if not os.path.exists(app.static_folder):
         return jsonify({
@@ -70,19 +74,31 @@ def serve(path):
             'basedir': basedir
         }), 500
     
-    # Servir archivos estáticos
+    # Servir archivos estáticos si existen
     if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
+    
+    # Para cualquier otra ruta, servir index.html (Vue Router manejará la ruta)
+    index_path = os.path.join(app.static_folder, 'index.html')
+    if os.path.exists(index_path):
+        return send_from_directory(app.static_folder, 'index.html')
     else:
-        index_path = os.path.join(app.static_folder, 'index.html')
-        if os.path.exists(index_path):
-            return send_from_directory(app.static_folder, 'index.html')
-        else:
-            return jsonify({
-                'error': 'index.html not found',
-                'message': 'No se encontró index.html en la carpeta dist.',
-                'contents': os.listdir(app.static_folder) if os.path.exists(app.static_folder) else []
-            }), 404
+        return jsonify({
+            'error': 'index.html not found',
+            'message': 'No se encontró index.html en la carpeta dist.',
+            'contents': os.listdir(app.static_folder) if os.path.exists(app.static_folder) else []
+        }), 404
+
+# Manejador de errores 404 - redirige al frontend
+@app.errorhandler(404)
+def not_found(e):
+    # Si es una ruta de API, devolver JSON
+    if request.path.startswith('/api/'):
+        return jsonify({'error': 'Not found', 'path': request.path}), 404
+    # Para rutas de frontend, servir index.html
+    if os.path.exists(app.static_folder):
+        return send_from_directory(app.static_folder, 'index.html')
+    return jsonify({'error': 'Not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
